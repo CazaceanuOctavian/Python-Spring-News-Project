@@ -1,13 +1,13 @@
 package com.tests.demo.entity;
 
-public class Show {
+public class NewsEntity {
     String title;
 
-    public Show() {
+    public NewsEntity() {
 
     }
 
-    public Show(String title) {
+    public NewsEntity(String title) {
 
     }
     

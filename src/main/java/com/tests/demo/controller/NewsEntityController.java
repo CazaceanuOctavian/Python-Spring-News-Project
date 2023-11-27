@@ -11,28 +11,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.tests.demo.entity.Show;
-import com.tests.demo.service.ShowService;
+import com.tests.demo.entity.NewsEntity;
+import com.tests.demo.service.NewsEntityService;
 
 @RestController
-public class ShowController {
+public class NewsEntityController {
 
     @Autowired
-    private ShowService showService;
+    private NewsEntityService newsEntityService;
 
     @GetMapping("/show_data/{id}")
     public ResponseEntity<String> getShowById(@PathVariable int id) {
-        return new ResponseEntity<String>(showService.getShowTitleById(id), HttpStatus.FOUND);
+        return new ResponseEntity<String>(newsEntityService.getNewsEntityTitleById(id), HttpStatus.FOUND);
     }
 
     @PostMapping("/receive_data")
-    public ResponseEntity<Show> createShow(@RequestBody Show show) {
-        showService.addShow(show);
-        return new ResponseEntity<Show>(show, HttpStatus.CREATED);
+    public ResponseEntity<NewsEntity> createShow(@RequestBody NewsEntity newsEntity) {
+        newsEntityService.addNewsEntity(newsEntity);
+        return new ResponseEntity<>(newsEntity, HttpStatus.CREATED);
     }
 
     @GetMapping("/receive_flask_payload")
-    public ResponseEntity<String> getShowFromFlask() {
+    public ResponseEntity<String> getNewsEntityFromFlask() {
         String apiFlaskUrl = "http://localhost:5000/post_example";
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(apiFlaskUrl, HttpMethod.POST, null, String.class);
