@@ -1,4 +1,4 @@
-package com.tests.demo;
+package com.tests.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.tests.demo.entity.Show;
 import com.tests.demo.service.ShowService;
 
 @RestController

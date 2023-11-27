@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.tests.demo.Show;
+import com.tests.demo.entity.Show;
 
 @Repository
 public class ShowRepository {

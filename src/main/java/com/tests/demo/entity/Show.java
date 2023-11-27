@@ -1,4 +1,4 @@
-package com.tests.demo;
+package com.tests.demo.entity;
 
 public class Show {
     String title;
