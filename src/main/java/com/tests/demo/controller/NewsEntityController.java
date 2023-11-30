@@ -11,7 +11,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tests.demo.entity.NewsEntity;
+import com.tests.demo.repository.NewsEntityRepositoryInterface;
 import com.tests.demo.service.NewsEntityService;
 
 @RestController
@@ -19,6 +24,9 @@ public class NewsEntityController {
 
     @Autowired
     private NewsEntityService newsEntityService;
+
+    @Autowired
+    private NewsEntityRepositoryInterface newsEntityRepositoryInterface;
 
     @GetMapping("/show_data/{id}")
     public ResponseEntity<String> getShowById(@PathVariable int id) {
@@ -32,13 +40,22 @@ public class NewsEntityController {
     }
 
     @GetMapping("/receive_flask_payload")
-    public ResponseEntity<String> getNewsEntityFromFlask() {
+    public ResponseEntity<String> getNewsEntityFromFlask() throws JsonMappingException, JsonProcessingException {
         String apiFlaskUrl = "http://localhost:5000/post_example";
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(apiFlaskUrl, HttpMethod.POST, null, String.class);
+        ResponseEntity<String> response = restTemplate.exchange(apiFlaskUrl, HttpMethod.GET, null, String.class);
         if(response.getStatusCode()==HttpStatus.OK) {
             String body = response.getBody();
-            System.out.println(body);
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.readTree(body);
+            String newsEntityTitle = node.get("title").asText();
+
+            NewsEntity currentNewsEntity = new NewsEntity();
+            currentNewsEntity.setTitle(newsEntityTitle);
+
+            newsEntityRepositoryInterface.save(currentNewsEntity);
+
+            System.out.println(newsEntityTitle);
         }
         return response;
     }

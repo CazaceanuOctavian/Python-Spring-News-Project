@@ -7,8 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import com.tests.demo.entity.NewsEntity;
 
-
-
 @Repository
 public class NewsEntityRepository {
     private List<NewsEntity> newsEntityList = new ArrayList<>();
