@@ -1,6 +1,7 @@
 package com.tests.demo.controller;
 
 import java.net.URL;
+import java.util.ArrayList;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tests.demo.entity.NewsEntity;
 import com.tests.demo.repository.NewsEntityRepositoryInterface;
 import com.tests.demo.service.NewsEntityService;
+import com.tests.demo.utility.Crawler;
+
 
 @RestController
 public class NewsEntityController {
@@ -33,6 +36,9 @@ public class NewsEntityController {
 
     @Autowired
     private NewsEntityRepositoryInterface newsEntityRepositoryInterface;
+
+    @Autowired 
+    private Crawler crawler;
 
     @GetMapping("/show_data/{id}")
     public ResponseEntity<String> getShowById(@PathVariable int id) {
@@ -81,9 +87,16 @@ public class NewsEntityController {
 
         HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), headers);
 
-        String postRequestAsString = restTemplate.postForObject(apiFlaskUrl, request, String.class);
+        restTemplate.postForObject(apiFlaskUrl, request, String.class);
   
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //fun!
+    @PostMapping("/crawl")
+    public void doCrawling(@RequestBody String originUrl) {
+        String origin = "https://edition.cnn.com/world";
+        crawler.crawl(1, origin, new ArrayList<String>());
     }
 
 }
