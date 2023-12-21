@@ -50,7 +50,7 @@ public class NewsEntityController {
 
     @GetMapping("/receive_flask_payload")
     public ResponseEntity<String> getNewsEntityFromFlask() throws JsonMappingException, JsonProcessingException {
-        String apiFlaskUrl = "http://localhost:5000/post_example";
+        String apiFlaskUrl = "http://localhost:5000/receive_flask_send_java";
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(apiFlaskUrl, HttpMethod.POST, null, String.class);
         if(response.getStatusCode()==HttpStatus.OK) {
@@ -71,7 +71,7 @@ public class NewsEntityController {
 
     @PostMapping("/send_flask_payload")
     public ResponseEntity<String> sendUrlToFlask(@RequestBody NewsEntity newsEntity) {
-        String apiFlaskUrl = "http://localhost:5000/receive_example";
+        String apiFlaskUrl = "http://localhost:5000//receive_java_send_flask";
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
