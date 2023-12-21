@@ -23,7 +23,8 @@ public class Crawler {
                 if(doc != null) {
                     for(Element link : doc.select("a[href]")) {
                         String extractedLink = link.absUrl("href");
-                        if(extractedLink.contains("https://")) {
+                        //# se refera la fragment url's de care nu avem nevoie
+                        if(extractedLink.contains("https://") && !extractedLink.contains("#")) {
                             try {
                                 URL extractedUrl = new URL(extractedLink);
                                 if(extractedUrl.getAuthority().equals(originUrl.getAuthority())) {
@@ -50,9 +51,9 @@ public class Crawler {
 
             if(con.response().statusCode() == 200) {
                 System.out.println("Link: " + url);
-                System.out.println(doc.title());
+                //System.out.println(doc.title());
                 v.add(url);
-
+                
                 return doc;
             }
             return null;
