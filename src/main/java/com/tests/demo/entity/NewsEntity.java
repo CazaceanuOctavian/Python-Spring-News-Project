@@ -18,20 +18,24 @@ public class NewsEntity {
     @Column(name = "id")
     long id;
 
-    @Column(name = "summarized_content", nullable = false, length = 4000)
-    String title;
-
     @Column(name = "URL", nullable = true)
     URL url;
+
+    @Column(name = "summarized_content", nullable = true, length = 4000)
+    String summarizedContent;
+
+    @Column(name = "title", nullable = true)
+    String title;
 
     public NewsEntity() {
 
     }
 
-    public NewsEntity(int id, String title, URL url) {
+    public NewsEntity(int id, String title, URL url, String summarizedContent) {
         this.id = id;
-        this.title = title;
         this.url = url;
+        this.title = title;
+        this.summarizedContent = summarizedContent;
     }
 
 
@@ -58,6 +62,15 @@ public class NewsEntity {
     public void setUrl(URL url) {
         this.url = url;
     }
+
+    public String getSummarizedContent() {
+        return this.summarizedContent;
+    }
+
+    public void setSummarizedContent(String summarizedContent) {
+        this.summarizedContent = summarizedContent;
+    }
+
 
 
 }

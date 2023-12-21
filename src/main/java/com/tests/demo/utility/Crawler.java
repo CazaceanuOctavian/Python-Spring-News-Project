@@ -11,15 +11,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.context.annotation.Configuration;
 
+import com.tests.demo.entity.NewsEntity;
+import com.tests.demo.repository.NewsEntityRepositoryInterface;
+
 @Configuration
 public class Crawler {
     String url;
     
-    public static void crawl(int level, String url, ArrayList<String> visited) {
+    public static void crawl(int level, String url, ArrayList<String> visited, NewsEntityRepositoryInterface newsEntityRepositoryInterface) {
         try {
             URL originUrl = new URL(url);
-            if(level<=3) {
-                Document doc = request(url, visited);
+            if(level<=1) {
+                Document doc = request(url, visited, newsEntityRepositoryInterface);
                 if(doc != null) {
                     for(Element link : doc.select("a[href]")) {
                         String extractedLink = link.absUrl("href");
@@ -29,7 +32,7 @@ public class Crawler {
                                 URL extractedUrl = new URL(extractedLink);
                                 if(extractedUrl.getAuthority().equals(originUrl.getAuthority())) {
                                     if(visited.contains(extractedLink) == false) {
-                                        crawl(level++, extractedLink, visited);
+                                        crawl(level++, extractedLink, visited, newsEntityRepositoryInterface);
                                     }
                                 }
                             } catch (MalformedURLException e) {
@@ -44,7 +47,7 @@ public class Crawler {
         }
     }
 
-    private static Document request(String url, ArrayList<String> v) {
+    private static Document request(String url, ArrayList<String> v, NewsEntityRepositoryInterface newsEntityRepositoryInterface) {
         try {
             Connection con = Jsoup.connect(url);
             Document doc = con.get();
@@ -53,6 +56,13 @@ public class Crawler {
                 System.out.println("Link: " + url);
                 //System.out.println(doc.title());
                 v.add(url);
+                
+                NewsEntity currentEntity = new NewsEntity();
+                currentEntity.setSummarizedContent(null);
+                currentEntity.setTitle(doc.title());
+                currentEntity.setUrl(new URL(url));
+
+                newsEntityRepositoryInterface.save(currentEntity);
                 
                 return doc;
             }

@@ -96,7 +96,7 @@ public class NewsEntityController {
         JsonNode node = mapper.readTree(originUrl);
         String extractedOrigin = node.get("url").asText();
         
-        Crawler.crawl(1, extractedOrigin, new ArrayList<String>());
+        Crawler.crawl(1, extractedOrigin, new ArrayList<String>(), newsEntityRepositoryInterface);
     }
 
 }
