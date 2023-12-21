@@ -1,6 +1,8 @@
 package com.tests.demo.utility;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import org.jsoup.Connection;
@@ -11,20 +13,33 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class Crawler {
-    String url= "https://en.wikipedia.org/wiki/Main_Page";
+    String url;
     
     public static void crawl(int level, String url, ArrayList<String> visited) {
-        if(level<=3) {
-            Document doc = request(url, visited);
-
-            if(doc != null) {
-                for(Element link : doc.select("a[href]")) {
-                    String next_link = link.absUrl("href");
-                    if(visited.contains(next_link) == false) {
-                        crawl(level++, next_link, visited);
+        try {
+            URL originUrl = new URL(url);
+            if(level<=3) {
+                Document doc = request(url, visited);
+                if(doc != null) {
+                    for(Element link : doc.select("a[href]")) {
+                        String extractedLink = link.absUrl("href");
+                        if(extractedLink.contains("https://")) {
+                            try {
+                                URL extractedUrl = new URL(extractedLink);
+                                if(extractedUrl.getAuthority().equals(originUrl.getAuthority())) {
+                                    if(visited.contains(extractedLink) == false) {
+                                        crawl(level++, extractedLink, visited);
+                                    }
+                                }
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
             }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         }
     }
 

@@ -37,9 +37,6 @@ public class NewsEntityController {
     @Autowired
     private NewsEntityRepositoryInterface newsEntityRepositoryInterface;
 
-    @Autowired 
-    private Crawler crawler;
-
     @GetMapping("/show_data/{id}")
     public ResponseEntity<String> getShowById(@PathVariable int id) {
         return new ResponseEntity<String>(newsEntityService.getNewsEntityTitleById(id), HttpStatus.FOUND);
@@ -94,9 +91,12 @@ public class NewsEntityController {
 
     //fun!
     @PostMapping("/crawl")
-    public void doCrawling(@RequestBody String originUrl) {
-        String origin = "https://edition.cnn.com/world";
-        crawler.crawl(1, origin, new ArrayList<String>());
+    public void doCrawling(@RequestBody String originUrl) throws JsonMappingException, JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(originUrl);
+        String extractedOrigin = node.get("url").asText();
+        
+        Crawler.crawl(1, extractedOrigin, new ArrayList<String>());
     }
 
 }
