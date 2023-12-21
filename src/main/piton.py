@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, redirect, url_for
+from flask import Flask, request, jsonify, redirect, url_for, render_template
 
 app = Flask(__name__)
 
@@ -12,18 +12,23 @@ def receive_nothing_send_flask():
 @app.route('/receive_java_send_flask', methods=['GET', 'POST'])
 def receive_java_redirect_flask():
     data = request.json
-    print("recieved data: ", data)
+    if request.method == 'POST':
+        print("recieved data: ", data)
+        result = {'title': 'mock-summary'}
+        return redirect(url_for('receive_flask_send_java', processed_data=result))
+    else:
+        return "err"
 
-    result = {'title': 'mock-summary'}
-    return redirect(url_for('receive_flask_send_java', processed_data=result))
-
-#post e pus for saftey deocamdata
-@app.route('/receive_flask_send_java', methods=['GET', 'POST'])
+@app.route('/receive_flask_send_java', methods=['GET'])
 def receive_flask_send_java():
     processed_data = request.args.get('processed_data')
-    print("received flask data: ", processed_data)
-
-    return jsonify(processed_data)
+    if processed_data == None:
+        print("no data found")
+        result = {'title': 'NOT_FOUND'}
+        return jsonify(result)
+    else:
+        print("received flask data: ", processed_data)
+        return jsonify(processed_data)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
