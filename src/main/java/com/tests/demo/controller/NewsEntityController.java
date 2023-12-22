@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -109,7 +110,10 @@ public class NewsEntityController {
 
         restTemplate.postForObject(apiFlaskUrl, request, String.class);
 
-        String apiFlaskUrl2 = "http://localhost:5000/receive_flask_send_java";
+        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("http://localhost:5000/receive_flask_send_java")
+        .queryParam("processed_data", "{'title': 'mock-summary'}");
+
+        String apiFlaskUrl2 = builder.toUriString();
         
         ResponseEntity<String> response = restTemplate.exchange(apiFlaskUrl2, HttpMethod.GET, null, String.class);
         if(response.getStatusCode()==HttpStatus.OK) {
