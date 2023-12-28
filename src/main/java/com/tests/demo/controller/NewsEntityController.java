@@ -85,7 +85,8 @@ public class NewsEntityController {
 
         HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), headers);
 
-        restTemplate.postForObject(apiFlaskUrl, request, String.class);
+        String response = restTemplate.postForObject(apiFlaskUrl, request, String.class);
+        System.out.println(response);
   
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -93,7 +94,7 @@ public class NewsEntityController {
     //=========================
     //testing
 
-    @PostMapping("/send_flask_payload")
+    @PostMapping("/send_flask_payload_so_far")
     public ResponseEntity<String> sendUrlToFlask2(@RequestBody NewsEntity newsEntity) throws JsonMappingException, JsonProcessingException {
         String apiFlaskUrl = "http://localhost:5000/receive_java_send_flask";
         RestTemplate restTemplate = new RestTemplate();
@@ -109,6 +110,9 @@ public class NewsEntityController {
         HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), headers);
 
         restTemplate.postForObject(apiFlaskUrl, request, String.class);
+        //====
+        
+        //===
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("http://localhost:5000/receive_flask_send_java")
         .queryParam("processed_data", "{'title': 'mock-summary'}");
@@ -132,6 +136,27 @@ public class NewsEntityController {
   
         return new ResponseEntity<>(HttpStatus.OK);
 
+    }
+
+    @PostMapping("/send_flask_payload")
+    public ResponseEntity<String> sendUrlToFlask3(@RequestBody NewsEntity newsEntity) throws JsonMappingException, JsonProcessingException {
+        String apiFlaskUrl = "http://localhost:5000//receive_java_send_java";
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        URL extractedUrl = newsEntity.getUrl();
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("url", extractedUrl);
+
+        HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), headers);
+
+        String response = restTemplate.postForObject(apiFlaskUrl, request, String.class);
+        System.out.println(response);
+  
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     //=========================

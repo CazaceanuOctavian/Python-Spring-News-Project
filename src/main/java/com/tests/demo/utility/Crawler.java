@@ -21,7 +21,7 @@ public class Crawler {
     public static void crawl(int level, String url, ArrayList<String> visited, NewsEntityRepositoryInterface newsEntityRepositoryInterface) {
         try {
             URL originUrl = new URL(url);
-            if(level<=1) {
+            if(level<=4) {
                 Document doc = request(url, visited, newsEntityRepositoryInterface);
                 if(doc != null) {
                     for(Element link : doc.select("a[href]")) {
