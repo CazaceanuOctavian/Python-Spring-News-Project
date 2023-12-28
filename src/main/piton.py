@@ -1,6 +1,7 @@
+import random
+import string
 from urllib.parse import unquote
 from flask import Flask, request, jsonify, redirect, url_for
-import requests
 
 app = Flask(__name__)
 
@@ -46,11 +47,14 @@ def recieve_java_send_java():
     #do stuff
     if request.method == 'POST':
         print("received data: ", data)
-        result = {'title': 'mock_summary1'}
+        #emulates examples of different outputs
+        letters = string.ascii_letters
+        payload = ''.join(random.choice(letters) for _ in range(15)) 
+        result = {'summarizedContent': payload}
         return jsonify(result)
     else:
         print("no data found")
-        result = {'title': 'NOT_FOUND'}
+        result = {'summarizedContent': 'NOT_FOUND'}
         return jsonify(result)
 
 if __name__ == '__main__':

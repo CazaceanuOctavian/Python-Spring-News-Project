@@ -26,7 +26,7 @@ public class Crawler {
                 if(doc != null) {
                     for(Element link : doc.select("a[href]")) {
                         String extractedLink = link.absUrl("href");
-                        //# se refera la fragment url's de care nu avem nevoie
+                        //"#" se refera la fragment url's de care nu avem nevoie
                         if(extractedLink.contains("https://") && !extractedLink.contains("#")) {
                             try {
                                 URL extractedUrl = new URL(extractedLink);

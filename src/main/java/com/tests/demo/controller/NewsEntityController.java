@@ -70,77 +70,10 @@ public class NewsEntityController {
         return response;
     }
 
-    @PostMapping("/send_flask_payload1")
-    public ResponseEntity<String> sendUrlToFlask(@RequestBody NewsEntity newsEntity) {
-        String apiFlaskUrl = "http://localhost:5000//receive_java_send_flask";
-        RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        URL extractedUrl = newsEntity.getUrl();
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("url", extractedUrl);
-
-        HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), headers);
-
-        String response = restTemplate.postForObject(apiFlaskUrl, request, String.class);
-        System.out.println(response);
-  
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    //=========================
-    //testing
-
-    @PostMapping("/send_flask_payload_so_far")
-    public ResponseEntity<String> sendUrlToFlask2(@RequestBody NewsEntity newsEntity) throws JsonMappingException, JsonProcessingException {
-        String apiFlaskUrl = "http://localhost:5000/receive_java_send_flask";
-        RestTemplate restTemplate = new RestTemplate();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        URL extractedUrl = newsEntity.getUrl();
-
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("url", extractedUrl);
-
-        HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), headers);
-
-        restTemplate.postForObject(apiFlaskUrl, request, String.class);
-        //====
-        
-        //===
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("http://localhost:5000/receive_flask_send_java")
-        .queryParam("processed_data", "{'title': 'mock-summary'}");
-
-        String apiFlaskUrl2 = builder.toUriString();
-        
-        ResponseEntity<String> response = restTemplate.exchange(apiFlaskUrl2, HttpMethod.GET, null, String.class);
-        if(response.getStatusCode()==HttpStatus.OK) {
-            String body = response.getBody();
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode node = mapper.readTree(body);
-            String newsEntityTitle = node.get("title").asText();
-
-            NewsEntity currentNewsEntity = new NewsEntity();
-            currentNewsEntity.setTitle(newsEntityTitle);
-
-            newsEntityRepositoryInterface.save(currentNewsEntity);
-
-            System.out.println(newsEntityTitle);
-        }
-  
-        return new ResponseEntity<>(HttpStatus.OK);
-
-    }
-
     @PostMapping("/send_flask_payload")
     public ResponseEntity<String> sendUrlToFlask3(@RequestBody NewsEntity newsEntity) throws JsonMappingException, JsonProcessingException {
-        String apiFlaskUrl = "http://localhost:5000//receive_java_send_java";
+        String apiFlaskUrl = "http://localhost:5000/receive_java_send_java";
+
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -158,9 +91,6 @@ public class NewsEntityController {
   
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
-    //=========================
-    //endtesting
 
     //fun!
     @PostMapping("/crawl")
