@@ -2,6 +2,7 @@ package com.tests.demo.controller;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -62,6 +63,7 @@ public class NewsEntityController {
 
             NewsEntity currentNewsEntity = new NewsEntity();
             currentNewsEntity.setTitle(newsEntityTitle);
+            
 
             newsEntityRepositoryInterface.save(currentNewsEntity);
 
@@ -70,6 +72,7 @@ public class NewsEntityController {
         return response;
     }
 
+    //todo --> config file for initialization of RestTemplate objects which is to be injected into NewsEntityController  
     @PostMapping("/send_flask_payload")
     public ResponseEntity<String> sendUrlToFlask3(@RequestBody NewsEntity newsEntity) throws JsonMappingException, JsonProcessingException {
         String apiFlaskUrl = "http://localhost:5000/receive_java_send_java";
@@ -77,18 +80,33 @@ public class NewsEntityController {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
+        JSONObject jsonObject = new JSONObject();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        URL extractedUrl = newsEntity.getUrl();
+        long id=1;
+        while(newsEntityRepositoryInterface.existsById(id)) {
+            Optional<NewsEntity> optionalNewsEntity = newsEntityRepositoryInterface.findById(id);
+            if(optionalNewsEntity.isPresent()) {
+                NewsEntity currentNewsEntity = optionalNewsEntity.get();
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("url", extractedUrl);
+                URL extractedUrl = currentNewsEntity.getUrl();
 
-        HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), headers);
+                jsonObject.put("url", extractedUrl);
 
-        String response = restTemplate.postForObject(apiFlaskUrl, request, String.class);
-        System.out.println(response);
-  
+                HttpEntity<String> request = new HttpEntity<>(jsonObject.toString(), headers);
+
+                String response = restTemplate.postForObject(apiFlaskUrl, request, String.class);
+
+                currentNewsEntity.setSummarizedContent(response);
+
+                newsEntityRepositoryInterface.save(currentNewsEntity);
+                
+                id++;
+                System.out.println(response);
+            }
+            else
+                id++;
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

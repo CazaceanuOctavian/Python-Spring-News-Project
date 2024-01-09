@@ -21,7 +21,7 @@ public class NewsEntity {
     @Column(name = "URL", nullable = true)
     URL url;
 
-    @Column(name = "summarized_content", nullable = true, length = 4000)
+    @Column(name = "summarized_content", nullable = true, length = 50000)
     String summarizedContent;
 
     @Column(name = "title", nullable = true)

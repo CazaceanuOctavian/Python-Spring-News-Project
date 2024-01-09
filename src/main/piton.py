@@ -1,7 +1,13 @@
+import json
 import random
 import string
+import numpy as np
+import requests
+import trafilatura
 from urllib.parse import unquote
+from bs4 import BeautifulSoup
 from flask import Flask, request, jsonify, redirect, url_for
+from requests.models import MissingSchema
 
 app = Flask(__name__)
 
@@ -44,18 +50,34 @@ def receive_flask_send_java():
 @app.route('/receive_java_send_java', methods = ['GET', 'POST'])
 def recieve_java_send_java():
     data=request.json
-    #do stuff
+    #doing stufff
+    transormDataToString = json.dumps(data)
+    parsedData = json.loads(transormDataToString)
+
+    url = parsedData['url']
+
+    downloaded_url = trafilatura.fetch_url(url)
+    try:
+        a = trafilatura.extract(downloaded_url, output_format = 'json', with_metadata=True, include_comments = False,
+                            date_extraction_params={'extensive_search': True, 'original_date': True})
+    except AttributeError:
+        a = trafilatura.extract(downloaded_url, output_format = 'json', with_metadata=True,
+                            date_extraction_params={'extensive_search': True, 'original_date': True})
+    if a:
+        json_output = json.loads(a)
+        payload = json_output['raw_text']
+    else:
+        json_output = 'ERR'
+        payload = 'ERR'
+
+    #ended doing stuff
     if request.method == 'POST':
-        print("received data: ", data)
-        #emulates examples of different outputs
-        letters = string.ascii_letters
-        payload = ''.join(random.choice(letters) for _ in range(15)) 
-        result = {'summarizedContent': payload}
-        return jsonify(result)
+        return jsonify(payload)
     else:
         print("no data found")
         result = {'summarizedContent': 'NOT_FOUND'}
         return jsonify(result)
+    
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

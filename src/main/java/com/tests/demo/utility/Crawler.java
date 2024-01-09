@@ -21,7 +21,7 @@ public class Crawler {
     public static void crawl(int level, String url, ArrayList<String> visited, NewsEntityRepositoryInterface newsEntityRepositoryInterface) {
         try {
             URL originUrl = new URL(url);
-            if(level<=4) {
+            if(level<=3) {
                 Document doc = request(url, visited, newsEntityRepositoryInterface);
                 if(doc != null) {
                     for(Element link : doc.select("a[href]")) {
@@ -30,7 +30,8 @@ public class Crawler {
                         if(extractedLink.contains("https://") && !extractedLink.contains("#")) {
                             try {
                                 URL extractedUrl = new URL(extractedLink);
-                                if(extractedUrl.getAuthority().equals(originUrl.getAuthority())) {
+                                //&& extractedUrl.getPath().toString().contains(extractSubstringFromEnd(originUrl.toString()))) {
+                                if(extractedUrl.getAuthority().equals(originUrl.getAuthority()) && !extractedUrl.getPath().contains("live-tv")) { 
                                     if(visited.contains(extractedLink) == false) {
                                         crawl(level++, extractedLink, visited, newsEntityRepositoryInterface);
                                     }
@@ -57,13 +58,14 @@ public class Crawler {
                 //System.out.println(doc.title());
                 v.add(url);
                 
-                NewsEntity currentEntity = new NewsEntity();
-                currentEntity.setSummarizedContent(null);
-                currentEntity.setTitle(doc.title());
-                currentEntity.setUrl(new URL(url));
+                if(url.contains("/world") || url.contains("/americas") || url.contains("/africa") || url.contains("/asia")) {
+                    NewsEntity currentEntity = new NewsEntity();
+                    currentEntity.setSummarizedContent(null);
+                    currentEntity.setTitle(doc.title());
+                    currentEntity.setUrl(new URL(url));
 
-                newsEntityRepositoryInterface.save(currentEntity);
-                
+                    newsEntityRepositoryInterface.save(currentEntity);
+            }
                 return doc;
             }
             return null;
@@ -72,4 +74,18 @@ public class Crawler {
             return null;
         }
     }
+
+    public static String extractSubstringFromEnd(String input) {
+        if (input != null && !input.isEmpty()) {
+            int lastIndex = input.lastIndexOf("/");
+            if (lastIndex != -1) {
+                return input.substring(lastIndex + 1);
+            } else {
+                return input;
+            }
+        } else {
+            return null;
+        }
+    }
+
 }
